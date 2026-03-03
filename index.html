@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BakeO Dash</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .qty-btn:active { transform: scale(0.9); }
+    </style>
+</head>
+<body class="bg-slate-50 pb-64">
+    <div class="max-w-md mx-auto p-6">
+        <header class="mb-8 text-center">
+            <h1 class="text-5xl font-800 tracking-tighter italic text-slate-900">Bake<span class="text-orange-600 not-italic">O</span></h1>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">Professional Billing Dash</p>
+        </header>
+
+        <div id="snack-list" class="space-y-4 mb-10"></div>
+
+        <div class="bg-white rounded-[2.5rem] p-6 shadow-sm border border-slate-100 mb-6">
+            <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Customer Details</h2>
+            <input type="text" id="cust-name" placeholder="Customer Name (Optional)" 
+                class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-orange-500 transition-all mb-2">
+        </div>
+
+        <div class="bg-white rounded-[2.5rem] p-6 shadow-sm border border-slate-100 mb-6 text-center">
+            <p class="text-xs font-bold text-slate-700">UPI: <span class="text-orange-600">9704687181@upi</span></p>
+            <div id="summary-items" class="mt-4 text-sm text-slate-600 space-y-2 border-t border-dashed pt-4"></div>
+            <div class="mt-4 flex justify-between font-bold text-lg"><span>Total:</span><span id="grand-total" class="text-orange-600">₹0</span></div>
+        </div>
+    </div>
+
+    <div class="fixed bottom-0 left-0 right-0 p-6 bg-white/80 backdrop-blur-md border-t border-slate-100 shadow-2xl z-10">
+        <div class="max-w-md mx-auto space-y-3">
+            <div class="relative flex items-center">
+                <span class="absolute left-4 font-mono text-lg text-slate-400 border-r pr-2">+91</span>
+                <input type="tel" id="cust-phone" placeholder="10 Digits" 
+                    class="w-full p-4 pl-16 bg-slate-50 border border-slate-200 rounded-2xl font-mono text-lg outline-none">
+            </div>
+            <button onclick="sendOrder()" class="w-full bg-slate-900 text-white font-bold py-5 rounded-2xl shadow-xl active:scale-95 text-lg">Send WhatsApp Receipt</button>
+        </div>
+    </div>
+
+    <script>
+        let snacks = [
+            { name: "Jowar Crackers", qty: 0, price: 170, edit: false },
+            { name: "Millet Crackers", qty: 0, price: 170, edit: false },
+            { name: "Rice Crackers", qty: 0, price: 170, edit: false },
+            { name: "Moong Dal Chips", qty: 0, price: 170, edit: false },
+            { name: "Ragi Chips", qty: 0, price: 170, edit: false },
+            { name: "Special Snack", qty: 0, price: 170, edit: true }
+        ];
+
+        function render() {
+            const list = document.getElementById('snack-list');
+            const summary = document.getElementById('summary-items');
+            list.innerHTML = ''; summary.innerHTML = '';
+            let total = 0;
+
+            snacks.forEach((item, i) => {
+                let sub = item.qty * item.price; total += sub;
+                let nameBox = item.edit ? `<input type="text" value="${item.name}" onchange="snacks[${i}].name=this.value;render()" class="font-bold text-lg bg-transparent border-b border-dashed outline-none w-full">` : `<h3 class="font-bold text-lg">${item.name}</h3>`;
+                list.innerHTML += `<div class="bg-white p-5 rounded-[2rem] border shadow-sm">
+                    <div class="flex justify-between mb-4"><div>${nameBox}<div class="flex gap-2 mt-1"><button onclick="changePrice(${i},-5)" class="w-6 h-6 bg-slate-100 rounded-full font-bold">-</button><span class="text-orange-600">₹${item.price}</span><button onclick="changePrice(${i},5)" class="w-6 h-6 bg-slate-100 rounded-full font-bold">+</button></div></div><span class="font-bold">₹${sub}</span></div>
+                    <div class="flex justify-between bg-slate-50 rounded-2xl p-1"><button onclick="changeQty(${i},-1)" class="qty-btn w-12 h-12 text-2xl text-slate-300">-</button><span class="text-xl font-black self-center">${item.qty}</span><button onclick="changeQty(${i},1)" class="qty-btn w-12 h-12 text-2xl text-slate-300">+</button></div></div>`;
+                if(item.qty > 0) summary.innerHTML += `<div class="flex justify-between"><span>${item.name} (x${item.qty})</span><span>₹${sub}</span></div>`;
+            });
+            document.getElementById('grand-total').innerText = `₹${total}`;
+        }
+        function changeQty(i, a) { snacks[i].qty = Math.max(0, snacks[i].qty + a); render(); }
+        function changePrice(i, a) { snacks[i].price = Math.max(0, snacks[i].price + a); render(); }
+        function sendOrder() {
+            const digits = document.getElementById('cust-phone').value.replace(/\D/g,'');
+            if(digits.length < 10) return alert("Enter 10 digits");
+            const phone = digits.length === 10 ? "91" + digits : digits;
+            const name = document.getElementById('cust-name').value.trim();
+            let greeting = name ? `*Dear ${name},*` : `*Dear Sir/Madam,*`;
+            let msg = `🛒 *BAKEO SNACKS RECEIPT*%0A${greeting}%0A---------------------------%0A`;
+            let total = 0; let has = false;
+            snacks.forEach(s => { if(s.qty > 0) { has = true; let sub = s.qty * s.price; total += sub; msg += `✅ *${s.name}* (x${s.qty}) - ₹${sub}%0A`; }});
+            if(!has) return alert("Select a snack");
+            msg += `---------------------------%0A💰 *TOTAL: ₹${total}*%0A%0A💳 *UPI:* 9704687181@upi%0A%0AThank you for snacking with *BakeO*! 🙏`;
+            window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+        }
+        render();
+    </script>
+</body>
+</html>
