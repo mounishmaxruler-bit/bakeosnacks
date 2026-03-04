@@ -105,7 +105,7 @@
             const phone = "91" + digits.slice(-10);
             const name = document.getElementById('cust-name').value.trim();
             let greeting = name ? `*Dear ${name},*` : `*Dear Sir/Madam,*`;
-            let msg = `🛒 *BAKEO SNACKS RECEIPT*%0A${greeting}%0A---------------------------%0A`;
+            let msg = `🛒 *BAKEO SNACKS*%0A${greeting}%0A---------------------------%0A`;
             let has = false;
             snacks.forEach(s => { if(s.qty > 0) { has = true; msg += `✅ *${s.name}* (x${s.qty}) - ₹${s.qty * s.price}%0A`; }});
             if(!has) return alert("Select at least one snack!");
