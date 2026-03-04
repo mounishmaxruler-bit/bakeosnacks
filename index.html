@@ -11,11 +11,11 @@
         .qty-btn:active { transform: scale(0.9); }
     </style>
 </head>
-<body class="bg-slate-50 pb-64">
+<body class="bg-slate-50 pb-72">
     <div class="max-w-md mx-auto p-6">
-        <header class="mb-8 text-center">
+        <header class="mb-8 text-center flex justify-between items-center">
             <h1 class="text-5xl font-800 tracking-tighter italic text-slate-900">Bake<span class="text-orange-600 not-italic">O</span></h1>
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">Professional Billing Dash</p>
+            <button onclick="resetForm()" class="text-[10px] font-bold bg-slate-200 text-slate-500 px-3 py-2 rounded-full uppercase tracking-widest active:bg-red-100 active:text-red-600">Clear Form</button>
         </header>
 
         <div id="snack-list" class="space-y-4 mb-10"></div>
@@ -27,20 +27,21 @@
         </div>
 
         <div class="bg-white rounded-[2.5rem] p-6 shadow-sm border border-slate-100 mb-6 text-center">
-            <p class="text-xs font-bold text-slate-700">UPI: <span class="text-orange-600">9704687181@upi</span></p>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Payment Info</p>
+            <p class="text-xs font-bold text-slate-700 select-all">UPI: <span class="text-orange-600">9704687181@upi</span></p>
             <div id="summary-items" class="mt-4 text-sm text-slate-600 space-y-2 border-t border-dashed pt-4"></div>
-            <div class="mt-4 flex justify-between font-bold text-lg"><span>Total:</span><span id="grand-total" class="text-orange-600">₹0</span></div>
+            <div class="mt-4 flex justify-between font-bold text-xl px-2"><span>Total:</span><span id="grand-total" class="text-orange-600">₹0</span></div>
         </div>
     </div>
 
-    <div class="fixed bottom-0 left-0 right-0 p-6 bg-white/80 backdrop-blur-md border-t border-slate-100 shadow-2xl z-10">
+    <div class="fixed bottom-0 left-0 right-0 p-6 bg-white/90 backdrop-blur-md border-t border-slate-100 shadow-2xl z-10">
         <div class="max-w-md mx-auto space-y-3">
             <div class="relative flex items-center">
                 <span class="absolute left-4 font-mono text-lg text-slate-400 border-r pr-2">+91</span>
                 <input type="tel" id="cust-phone" placeholder="10 Digits" 
-                    class="w-full p-4 pl-16 bg-slate-50 border border-slate-200 rounded-2xl font-mono text-lg outline-none">
+                    class="w-full p-4 pl-16 bg-slate-50 border border-slate-200 rounded-2xl font-mono text-lg outline-none focus:ring-2 focus:ring-orange-500 transition-all">
             </div>
-            <button onclick="sendOrder()" class="w-full bg-slate-900 text-white font-bold py-5 rounded-2xl shadow-xl active:scale-95 text-lg">Send WhatsApp Receipt</button>
+            <button onclick="sendOrder()" class="w-full bg-slate-900 text-white font-bold py-5 rounded-2xl shadow-xl active:scale-95 text-lg transition-transform">Send WhatsApp Receipt</button>
         </div>
     </div>
 
@@ -48,10 +49,10 @@
         let snacks = [
             { name: "Jowar Crackers", qty: 0, price: 170, edit: false },
             { name: "Millet Crackers", qty: 0, price: 170, edit: false },
-            { name: "Rice Crackers", qty: 0, price: 170, edit: false },
-            { name: "Moong Dal Chips", qty: 0, price: 170, edit: false },
-            { name: "Ragi Chips", qty: 0, price: 170, edit: false },
-            { name: "Special Snack", qty: 0, price: 170, edit: true }
+            { name: "Rice Crackers", qty: 0, price: 150, edit: false },
+            { name: "Moong Dal Chips", qty: 0, price: 150, edit: false },
+            { name: "Ragi Chips", qty: 0, price: 150, edit: false },
+            { name: "Special Snack", qty: 0, price: 150, edit: true }
         ];
 
         function render() {
@@ -62,27 +63,53 @@
 
             snacks.forEach((item, i) => {
                 let sub = item.qty * item.price; total += sub;
-                let nameBox = item.edit ? `<input type="text" value="${item.name}" onchange="snacks[${i}].name=this.value;render()" class="font-bold text-lg bg-transparent border-b border-dashed outline-none w-full">` : `<h3 class="font-bold text-lg">${item.name}</h3>`;
-                list.innerHTML += `<div class="bg-white p-5 rounded-[2rem] border shadow-sm">
-                    <div class="flex justify-between mb-4"><div>${nameBox}<div class="flex gap-2 mt-1"><button onclick="changePrice(${i},-5)" class="w-6 h-6 bg-slate-100 rounded-full font-bold">-</button><span class="text-orange-600">₹${item.price}</span><button onclick="changePrice(${i},5)" class="w-6 h-6 bg-slate-100 rounded-full font-bold">+</button></div></div><span class="font-bold">₹${sub}</span></div>
-                    <div class="flex justify-between bg-slate-50 rounded-2xl p-1"><button onclick="changeQty(${i},-1)" class="qty-btn w-12 h-12 text-2xl text-slate-300">-</button><span class="text-xl font-black self-center">${item.qty}</span><button onclick="changeQty(${i},1)" class="qty-btn w-12 h-12 text-2xl text-slate-300">+</button></div></div>`;
-                if(item.qty > 0) summary.innerHTML += `<div class="flex justify-between"><span>${item.name} (x${item.qty})</span><span>₹${sub}</span></div>`;
+                let nameBox = item.edit ? `<input type="text" value="${item.name}" onchange="snacks[${i}].name=this.value;render()" class="font-bold text-lg bg-transparent border-b border-dashed border-slate-300 outline-none w-full">` : `<h3 class="font-bold text-lg text-slate-800">${item.name}</h3>`;
+                list.innerHTML += `
+                <div class="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm transition-all">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex-1 mr-2">${nameBox}
+                            <div class="flex items-center gap-2 mt-1">
+                                <button onclick="changePrice(${i},-5)" class="w-8 h-8 flex items-center justify-center bg-slate-100 rounded-full font-bold text-slate-400 active:bg-orange-100 active:text-orange-600">-</button>
+                                <span class="text-sm font-bold text-orange-600">₹${item.price}</span>
+                                <button onclick="changePrice(${i},5)" class="w-8 h-8 flex items-center justify-center bg-slate-100 rounded-full font-bold text-slate-400 active:bg-orange-100 active:text-orange-600">+</button>
+                            </div>
+                        </div>
+                        <span class="font-800 text-slate-900">₹${sub}</span>
+                    </div>
+                    <div class="flex justify-between bg-slate-50 rounded-2xl p-1">
+                        <button onclick="changeQty(${i},-1)" class="qty-btn w-14 h-14 flex items-center justify-center text-2xl font-black text-slate-300 active:text-orange-600 transition-colors">-</button>
+                        <span class="text-xl font-black self-center text-slate-800">${item.qty}</span>
+                        <button onclick="changeQty(${i},1)" class="qty-btn w-14 h-14 flex items-center justify-center text-2xl font-black text-slate-300 active:text-orange-600 transition-colors">+</button>
+                    </div>
+                </div>`;
+                if(item.qty > 0) summary.innerHTML += `<div class="flex justify-between"><span>${item.name} (x${item.qty})</span><span class="font-bold text-slate-900">₹${sub}</span></div>`;
             });
             document.getElementById('grand-total').innerText = `₹${total}`;
         }
+
+        function resetForm() {
+            if(confirm("Clear current order?")) {
+                snacks.forEach(s => s.qty = 0);
+                document.getElementById('cust-name').value = '';
+                document.getElementById('cust-phone').value = '';
+                render();
+            }
+        }
+
         function changeQty(i, a) { snacks[i].qty = Math.max(0, snacks[i].qty + a); render(); }
         function changePrice(i, a) { snacks[i].price = Math.max(0, snacks[i].price + a); render(); }
+        
         function sendOrder() {
             const digits = document.getElementById('cust-phone').value.replace(/\D/g,'');
-            if(digits.length < 10) return alert("Enter 10 digits");
-            const phone = digits.length === 10 ? "91" + digits : digits;
+            if(digits.length < 10) return alert("Please enter a valid 10-digit number.");
+            const phone = "91" + digits.slice(-10);
             const name = document.getElementById('cust-name').value.trim();
             let greeting = name ? `*Dear ${name},*` : `*Dear Sir/Madam,*`;
             let msg = `🛒 *BAKEO SNACKS RECEIPT*%0A${greeting}%0A---------------------------%0A`;
-            let total = 0; let has = false;
-            snacks.forEach(s => { if(s.qty > 0) { has = true; let sub = s.qty * s.price; total += sub; msg += `✅ *${s.name}* (x${s.qty}) - ₹${sub}%0A`; }});
-            if(!has) return alert("Select a snack");
-            msg += `---------------------------%0A💰 *TOTAL: ₹${total}*%0A%0A💳 *UPI:* 9704687181@upi%0A%0AThank you for snacking with *BakeO*! 🙏`;
+            let has = false;
+            snacks.forEach(s => { if(s.qty > 0) { has = true; msg += `✅ *${s.name}* (x${s.qty}) - ₹${s.qty * s.price}%0A`; }});
+            if(!has) return alert("Select at least one snack!");
+            msg += `---------------------------%0A💰 *TOTAL: ₹${document.getElementById('grand-total').innerText.split('₹')[1]}*%0A%0A💳 *UPI:* 9704687181@upi%0A%0AThank you for snacking with *BakeO*! 🙏`;
             window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
         }
         render();
