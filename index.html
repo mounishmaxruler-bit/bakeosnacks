@@ -109,7 +109,7 @@
             let has = false;
             snacks.forEach(s => { if(s.qty > 0) { has = true; msg += `✅ *${s.name}* (x${s.qty}) - ₹${s.qty * s.price}%0A`; }});
             if(!has) return alert("Select at least one snack!");
-            msg += `---------------------------%0A💰 *TOTAL: ₹${document.getElementById('grand-total').innerText.split('₹')[1]}*%0A%0A💳 *UPI:* 9704687181@upi%0A%0AThank you for snacking with *BakeO*! 🙏`;
+            msg += `---------------------------%0A💰 *TOTAL: ₹${document.getElementById('grand-total').innerText.split('₹')[1]}*%0A%0A💳 *UPI:* 9704687181@upi%0A%0AThank you for snacking with *BakeO*!Follow Us: https://instagram.com/bakeosnacks 🙏`;
             window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
         }
         render();
